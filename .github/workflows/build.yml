@@ -154,6 +154,17 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           path: artifacts
+      - name: Check git tag against Cargo version
+        run: |
+          set -eoux
+          version=$(grep '^version' Cargo.toml | awk -F' = ' '{print $2}' | tr -d '"')
+          version="v$version"
+          tag='${{ github.ref }}'
+          tag="${tag#refs/tags/}"
+          if [ "$version" != "$tag" ]; then
+            echo "::error::Git tag doesn't match the Cargo version! ($version != $tag)"
+            exit 1
+          fi
       - name: Rename artifacts
         working-directory: artifacts
         run: |
