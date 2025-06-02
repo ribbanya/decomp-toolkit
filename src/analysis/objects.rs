@@ -134,7 +134,7 @@ pub fn detect_strings(obj: &mut ObjInfo) -> Result<()> {
                 StringResult::None => {}
                 StringResult::String { length, terminated } => {
                     let size = if terminated { length + 1 } else { length };
-                    if !symbol.size_known || symbol.size == size as u64 {
+                    if !symbol.size_known || symbol.size >= size as u64 {
                         let str = String::from_utf8_lossy(&data[..length]);
                         log::debug!("Found string '{}' @ {}", str, symbol.name);
                         symbols_set.push((symbol_idx, ObjDataKind::String, size));
@@ -142,7 +142,7 @@ pub fn detect_strings(obj: &mut ObjInfo) -> Result<()> {
                 }
                 StringResult::WString { length, str } => {
                     let size = length + 2;
-                    if !symbol.size_known || symbol.size == size as u64 {
+                    if !symbol.size_known || symbol.size >= size as u64 {
                         log::debug!("Found wide string '{}' @ {}", str, symbol.name);
                         symbols_set.push((symbol_idx, ObjDataKind::String16, size));
                     }
